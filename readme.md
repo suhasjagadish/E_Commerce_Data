@@ -4,7 +4,7 @@ A database is an organized collection of structured information, or data, typica
 This is a `Relational Database` which means that the data that are stored in a rows and columns and the tables are connected to each other with the help of `primary key` and `foreign key` constraints.
 
 **The following diagram shows the stucture of the database**
- ![Database structure](Screenshot.png)
+ ![Database structure](pic\Screenshot.png)
 
 **Description of the data**
  There are 8 tables in the Database which are related to each other with the help of primary key and foreign key
@@ -43,22 +43,22 @@ where
 order by 
     ordinal_position
 ```
-* Customer Table
-![Customer_table](Customers_Table.png)
-* Geolocation Table
- ![Geolocation_table](Geolocation_table.png) 
-* Order Item Table
- ![Order_Item_table](Orders_Item_table.png)
-* Order Table
-![Order_table](orders_table.png) 
-* Payment Table
-![Payment_table](payments_table.png) 
-* Order Review Table 
-![Order_review_Table](Orders_Review_table.png) 
-* Products Table
-![Produts_table](products_table.png)
-* Sellers Table 
- ![Sellers_table](sellers_table.png)
+* Customer Table <br />
+![Customer_table](pic\Customers_Table.png)
+* Geolocation Table <br />
+ ![Geolocation_table](pic\Geolocation_table.png) 
+* Order Item Table <br />
+ ![Order_Item_table](pic\Orders_Item_table.png)
+* Order Table <br />
+![Order_table](pic\orders_table.png) 
+* Payment Table <br />
+![Payment_table](pic\payments_table.png) 
+* Order Review Table <br />
+![Order_review_Table](pic\Orders_Review_table.png) 
+* Products Table<br />
+![Produts_table](pic\products_table.png)
+* Sellers Table <br />
+ ![Sellers_table](pic\sellers_table.png)
 
 
 Time period of the data given
@@ -71,8 +71,8 @@ Time period of the data given
         FROM
             `E_commerce.orders`
 ```
-* Output snippet
-    ![Time_period](time_range_output.png)
+* Output snippet <br />
+    ![Time_period](pic\time_range_output.png) <br />
 The given table contains the data from 4th September 2016 to 17th October 2018 with almost close to 2 years of data
 
 Cities and states covered in the data 
@@ -83,8 +83,8 @@ SELECT
 FROM
       `E_commerce.geolocation`
 ```
-* Output snippet
-![city](city_output.png)
+* Output snippet <br />
+![city](pic\city_output.png)<br />
 The dataset contains a total of `8011` cities 
 
 * States 
@@ -94,8 +94,8 @@ SELECT
 FROM
       `E_commerce.geolocation`
 ```
-* Output snippet 
-![State](state_output.png)
+* Output snippet <br />
+![State](pic\state_output.png)
 
 
 Exploring the growing trend on e-commerce in the given data and finding if there are seasonality with peaks at specific months.
@@ -119,13 +119,13 @@ select
 from 
   cte 
 ```
-* Output snippet
-![growing_tend](seasonality_output.png)
-![growing_tend](seasonality_graph.png)
+* Output snippet <br />
+![growing_tend](pic\seasonality_output.png)<br />
+![growing_tend](pic\seasonality_graph.png)<br />
 From the data we could see that there is a spike in the orders from the year 2017 and a rapid collapse of orders towards the end of the 2018. 
 It is evident that there is increase in orders in first quarter of each year. 
 
-Part of day at which the customers tend to buy products 
+Part of day at which the customers tend to buy products <br />
 * Query
 ``` sql 
 with cte as 
@@ -151,12 +151,12 @@ group by
 order by 
   2 desc
 ```
-* Output snippet
-![part_of_day](part_of_day_output.png)
-From the result it is evident that people in Brazil tends to buy the products during Afternoon 
+* Output snippet <br />
+![part_of_day](pic\part_of_day_output.png)<br />
+From the result it is evident that people in Brazil tends to buy the products during Afternoon <br />
 
-Month on month orders by region, states
-* Query
+Month on month orders by region, states <br />
+* Query <br />
 ``` sql 
 select  
   extract(month from o.order_purchase_timestamp) as month,
@@ -172,8 +172,8 @@ group by
 order by 
   2,1
 ```
-* Output snippet
-![MOM_region,state](mom_r%2Cs.png)
+* Output snippet <br />
+![MOM_region,state](pic\mom_r%2Cs.png)
 
 
 Distribution of Customers State wise 
@@ -189,8 +189,8 @@ group by
 order by 
   2 desc
 ```
-* Output snippet
-![state_wise_customers](state_wise_cus.png)
+* Output snippet <br />
+![state_wise_customers](pic\state_wise_cus.png) <br />
 
 Distribution of Customers City wise
 * Query
@@ -205,10 +205,10 @@ group by
 order by 
   2 desc
 ```
-* Output Snippet 
-![city_wise_customers](city_wise_cus.png)
+* Output Snippet <br />
+![city_wise_customers](pic\city_wise_cus.png) <br />
 
-Percentage increase in cost of orders from 2017 to 2018 
+Percentage increase in cost of orders from 2017 to 2018 <br />
 NOTE : Since the tables have comman months from January to August, analysis is only made on these month of two years
 * Query
 ``` sql
@@ -240,8 +240,8 @@ select
 from 
   data_2018 d18, data_2017 d17
 ```
-* Output sinppet 
-![Percentage_Increase_in_cost](percentage_inc.png)
+* Output sinppet  <br />
+![Percentage_Increase_in_cost](pic\percentage_inc.png) <br />
 From the output it is seen that there is increase of 138% of increse in cost 
 
 Analysis of sum of price and freight value and also average price and freight value
@@ -263,12 +263,12 @@ group by
 order by  
   1
 ```
-* Output snippet 
-![sum_and_avg_statewise](sum_and_avg.png)
+* Output snippet <br />
+![sum_and_avg_statewise](pic\sum_and_avg.png)
 
 Analysis of delivery metric 
-* Time to delivery 
-* Difference in estimate time to delivery 
+* Time to delivery <br />
+* Difference in estimate time to delivery <br />
 
 * Query
 ``` sql
@@ -282,8 +282,8 @@ select
 from 
   `E_commerce.orders`
 ```
-* Output snippet
-![Delivery_est_time](delivery_est.png)
+* Output snippet <br />
+![Delivery_est_time](pic\delivery_est.png) <br />
 In some of the diff_estimated_delivery we could see that there is a negative symbol which stated that the delivery was given before the estimated delivery date 
 
 Average freight_value, time_to_delivery, diff_estimated_delivery state wise
@@ -304,14 +304,14 @@ group by
 order by 
   1
 ```
-* Output Snippet 
-![average_values_statewise](avg_state_del.png)
+* Output Snippet <br /> 
+![average_values_statewise](pic\avg_state_del.png)
 
-### TOP 5 and BOTTOM 5 Analysis 
+### TOP 5 and BOTTOM 5 Analysis <br />
 
-#### Top 5 states with highest/lowest average freight value 
+#### Top 5 states with highest/lowest average freight value <br />
 
-* Top 5 states with highest average freight value
+* Top 5 states with highest average freight value<br />
 * Query 
 ``` sql
 select
@@ -329,10 +329,10 @@ order by
 limit 
   5
 ```
-* Output snippet 
-![Top5_average_freight_value](t5_af_val.png)
+* Output snippet <br />
+![Top5_average_freight_value](pic\t5_af_val.png)
 
-* Bottom 5 states with highest average freight value
+* Bottom 5 states with highest average freight value <br />
 * Query
 ``` sql
 select
@@ -349,11 +349,11 @@ order by
   2 asc
 limit   5
 ```
-* Output Snippet 
-![Least_avg_frieght_val](b5_af_val.png)
+* Output Snippet <br />
+![Least_avg_frieght_val](pic\b5_af_val.png)
 
-#### Top 5 states with highest/lowest average time to delivery 
-* Top 5 states with highest average time delivery 
+#### Top 5 states with highest/lowest average time to delivery <br />
+* Top 5 states with highest average time delivery <br />
 * Query 
 ``` sql 
 select
@@ -371,10 +371,10 @@ order by
 limit 
   5
 ```
-* Output snippet 
-![average_delivery_time](t5_ad_val.png)
+* Output snippet <br />
+![average_delivery_time](pic\t5_ad_val.png) <br />
 
-* Bottom 5 states with highest average time delivery 
+* Bottom 5 states with highest average time delivery <br />
 * Query 
 ``` sql
 select
@@ -392,10 +392,11 @@ order by
 limit 
   5
 ```
-![botoom5_average_delivery_time](b5_ad_val.png)
+* Output snippet<br />
+![botoom5_average_delivery_time](pic\b5_ad_val.png) <br />
 
-#### Top 5 states where delivery is really fast/ not so fast compared to estimated date
-* Top 5 states where the delivery is fast compared to estimated date 
+#### Top 5 states where delivery is really fast/ not so fast compared to estimated date <br />
+* Top 5 states where the delivery is fast compared to estimated date <br />
 * Query 
 ``` sql
 select
@@ -413,10 +414,10 @@ order by
 limit 
 	5
 ```
-* Output Snippet
-1[fastest_delivery](t5_fd_val.png)
+* Output Snippet <br />
+![fastest_delivery](pic\t5_fd_val.png) <br />
 
-* Top 5 states where the delivery is not fast compared to estimated date 
+* Top 5 states where the delivery is not fast compared to estimated date <br />
 * Query
 ``` sql
 select
@@ -434,10 +435,10 @@ order by
 limit 
   5
 ```
-* Output snippet 
-![least_fast_del](b5_fd_val.png)
+* Output snippet <br />
+![least_fast_del](pic\b5_fd_val.png)<br />
 
-Month on Month count of orders for different payment types
+Month on Month count of orders for different payment types <br />
 * Query
 ```sql
 select 
@@ -453,10 +454,10 @@ group by
 order by 
   2,1,3
 ```
-* Output snippet 
-![payment_count](payment_count.png)
+* Output snippet <br />
+![payment_count](pic\payment_count.png) <br />
 
-Distribution of payment instalments and count of orders
+Distribution of payment instalments and count of orders <br />
 * Query
 ``` sql
 with payment_distribution as (
@@ -481,16 +482,16 @@ from
 group by 
   1
 ```
-* Output Snippet 
-![EMI_count](emi_cnt.png)
+* Output Snippet <br />
+![EMI_count](pic\emi_cnt.png)
 
 ### Actionable Insight 
 
-1. We could see that there is a dip in orders in the Q2 and Q3 in orders as per the      data given 
+1. We could see that there is a dip in orders in the Q2 and Q3 in orders as per the data given 
 2. It is observed that the customers tend to buy more products during the Afternoon time period and least during dawn 
 3. We can see that customers’ orders are high in the highly populated and famous cities 
 4. Increase in cost is highly corelated with increase in orders 
-5. There is difference in average freight values between each state, 42.98 being    highest and 15.15 being lowest 
+5. There is difference in average freight values between each state, 42.98 being highest and 15.15 being lowest 
 6. There is difference in delivery time with in each state of the data provided 
 7. 99% of the customers tend to choose for Emi during purchase of the product
 
