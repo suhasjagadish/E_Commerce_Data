@@ -1,14 +1,14 @@
 # Analysis of E_Commerce_delivery Database
 
-A database is an organized collection of structured information, or data, typically stored electronically in a computer system. A database is usually controlled by a database management system (DBMS). These data are stored in rows and columns and this data can be retrived by using Structured Query Language (SQL)
-This is a `Relational Database` which means that the data that are stored in a rows and columns and the tables are connected to each other with the help of `primary key` and `foreign key` constraints.
+A database is an organized collection of structured information, or data, typically stored electronically in a computer system. A database is usually controlled by a database management system (DBMS). These data are stored in rows and columns and this data can be retrived by using Structured Query Language (SQL) <br />
+This is a `Relational Database` which means that the data that are stored in a rows and columns and the tables are connected to each other with the help of `primary key` and `foreign key` constraints.<br />
 
-**The following diagram shows the stucture of the database**
- ![Database structure](pic\Screenshot.png)
+**The following diagram shows the stucture of the database** <br />
+ ![Database structure](pic/Screenshot.png/
 
-**Description of the data**
+**Description of the data** <br />
  There are 8 tables in the Database which are related to each other with the help of primary key and foreign key
- The tables are :
+ The tables are :<br />
  * Customers 
  * Geolocation
  * Order Items 
@@ -20,7 +20,7 @@ This is a `Relational Database` which means that the data that are stored in a r
 
 The data of the each table were in CSV(`Comma seperated values`). So it was imported to the Sql envirnment and the analysis is done. Since size of the data is very large Google Sandbox Big Query is used since the processing speed is faster. This ananlysis has  analysing of data and providing `Actionable insight` with some `Recomandation`
 
-## Concepts used
+## Concepts used <br />
 
 To analyze the data I have used `DML` command to retrieve the useful data from the database which include,
 
@@ -31,7 +31,7 @@ To analyze the data I have used `DML` command to retrieve the useful data from t
 
 ### Analysis
 
-Getting  to know about the datatypes of each table
+#### 1.Getting  to know about the datatypes of each table
 
 ``` sql
 select 
@@ -44,24 +44,24 @@ order by
     ordinal_position
 ```
 * Customer Table <br />
-![Customer_table](pic\Customers_Table.png)
+![Customer_table](pic/Customers_Table.png)
 * Geolocation Table <br />
- ![Geolocation_table](pic\Geolocation_table.png) 
+ ![Geolocation_table](pic/Geolocation_table.png) 
 * Order Item Table <br />
- ![Order_Item_table](pic\Orders_Item_table.png)
+ ![Order_Item_table](pic/Orders_Item_table.png)
 * Order Table <br />
-![Order_table](pic\orders_table.png) 
+![Order_table](pic/orders_table.png) 
 * Payment Table <br />
-![Payment_table](pic\payments_table.png) 
+![Payment_table](pic/payments_table.png) 
 * Order Review Table <br />
-![Order_review_Table](pic\Orders_Review_table.png) 
+![Order_review_Table](pic/Orders_Review_table.png) 
 * Products Table<br />
-![Produts_table](pic\products_table.png)
+![Produts_table](pic/products_table.png)
 * Sellers Table <br />
- ![Sellers_table](pic\sellers_table.png)
+ ![Sellers_table](pic/sellers_table.png)
 
 
-Time period of the data given
+#### 2.Time period of the data given <br />
 * Query 
 ``` sql
         SELECT 
@@ -72,11 +72,12 @@ Time period of the data given
             `E_commerce.orders`
 ```
 * Output snippet <br />
-    ![Time_period](pic\time_range_output.png) <br />
+    ![Time_period](pic/time_range_output.png) <br />
 The given table contains the data from 4th September 2016 to 17th October 2018 with almost close to 2 years of data
 
-Cities and states covered in the data 
-* Cities 
+#### 3.Cities and states covered in the data <br />
+* 3a.Cities <br />
+**Query** 
 ```sql 
 SELECT 
       distinct geolocation_city as city
@@ -84,10 +85,11 @@ FROM
       `E_commerce.geolocation`
 ```
 * Output snippet <br />
-![city](pic\city_output.png)<br />
-The dataset contains a total of `8011` cities 
+![city](pic/city_output.png)<br />
+The dataset contains a total of `8011` cities <br />
 
-* States 
+*3b.States <br />
+**Query**
 ```sql 
 SELECT 
       distinct geolocation_state as state 
@@ -95,10 +97,10 @@ FROM
       `E_commerce.geolocation`
 ```
 * Output snippet <br />
-![State](pic\state_output.png)
+![State](pic/state_output.png)<br />
 
 
-Exploring the growing trend on e-commerce in the given data and finding if there are seasonality with peaks at specific months.
+#### 4.Exploring the growing trend on e-commerce in the given data and finding if there are seasonality with peaks at specific months.<br />
 * Query
 ``` sql
 with cte as 
@@ -120,12 +122,12 @@ from
   cte 
 ```
 * Output snippet <br />
-![growing_tend](pic\seasonality_output.png)<br />
-![growing_tend](pic\seasonality_graph.png)<br />
+![growing_tend](pic/seasonality_output.png)<br />
+![growing_tend](pic/seasonality_graph.png)<br />
 From the data we could see that there is a spike in the orders from the year 2017 and a rapid collapse of orders towards the end of the 2018. 
 It is evident that there is increase in orders in first quarter of each year. 
 
-Part of day at which the customers tend to buy products <br />
+#### 5.Part of day at which the customers tend to buy products <br />
 * Query
 ``` sql 
 with cte as 
@@ -152,10 +154,10 @@ order by
   2 desc
 ```
 * Output snippet <br />
-![part_of_day](pic\part_of_day_output.png)<br />
+![part_of_day](pic/part_of_day_output.png)<br />
 From the result it is evident that people in Brazil tends to buy the products during Afternoon <br />
 
-Month on month orders by region, states <br />
+#### 5.Month on month orders by region, states <br />
 * Query <br />
 ``` sql 
 select  
@@ -173,10 +175,10 @@ order by
   2,1
 ```
 * Output snippet <br />
-![MOM_region,state](pic\mom_r%2Cs.png)
+![MOM_region,state](pic/mom_r%2Cs.png)
 
 
-Distribution of Customers State wise 
+#### 6.Distribution of Customers State wise 
 * Query
 ``` sql 
 select 
@@ -190,9 +192,9 @@ order by
   2 desc
 ```
 * Output snippet <br />
-![state_wise_customers](pic\state_wise_cus.png) <br />
+![state_wise_customers](pic/state_wise_cus.png) <br />
 
-Distribution of Customers City wise
+#### 7.Distribution of Customers City wise
 * Query
 ``` sql
 select 
@@ -206,9 +208,9 @@ order by
   2 desc
 ```
 * Output Snippet <br />
-![city_wise_customers](pic\city_wise_cus.png) <br />
+![city_wise_customers](pic/city_wise_cus.png) <br />
 
-Percentage increase in cost of orders from 2017 to 2018 <br />
+#### 8.Percentage increase in cost of orders from 2017 to 2018 <br />
 NOTE : Since the tables have comman months from January to August, analysis is only made on these month of two years
 * Query
 ``` sql
@@ -241,10 +243,10 @@ from
   data_2018 d18, data_2017 d17
 ```
 * Output sinppet  <br />
-![Percentage_Increase_in_cost](pic\percentage_inc.png) <br />
+![Percentage_Increase_in_cost](pic/percentage_inc.png) <br />
 From the output it is seen that there is increase of 138% of increse in cost 
 
-Analysis of sum of price and freight value and also average price and freight value
+#### 9.Analysis of sum of price and freight value and also average price and freight value <br />
 * Query
 ``` sql
 select 
@@ -264,9 +266,9 @@ order by
   1
 ```
 * Output snippet <br />
-![sum_and_avg_statewise](pic\sum_and_avg.png)
+![sum_and_avg_statewise](pic/sum_and_avg.png)
 
-Analysis of delivery metric 
+#### 10.Analysis of delivery metric <br />
 * Time to delivery <br />
 * Difference in estimate time to delivery <br />
 
@@ -283,10 +285,10 @@ from
   `E_commerce.orders`
 ```
 * Output snippet <br />
-![Delivery_est_time](pic\delivery_est.png) <br />
+![Delivery_est_time](pic/delivery_est.png) <br />
 In some of the diff_estimated_delivery we could see that there is a negative symbol which stated that the delivery was given before the estimated delivery date 
 
-Average freight_value, time_to_delivery, diff_estimated_delivery state wise
+#### 11.Average freight_value, time_to_delivery, diff_estimated_delivery state wise <br />
 * Query
 ``` sql
 select
@@ -305,13 +307,13 @@ order by
   1
 ```
 * Output Snippet <br /> 
-![average_values_statewise](pic\avg_state_del.png)
+![average_values_statewise](pic/avg_state_del.png)
 
 ### TOP 5 and BOTTOM 5 Analysis <br />
 
-#### Top 5 states with highest/lowest average freight value <br />
+#### 13.Top 5 states with highest/lowest average freight value <br />
 
-* Top 5 states with highest average freight value<br />
+* 13a. Top 5 states with highest average freight value<br />
 * Query 
 ``` sql
 select
@@ -330,9 +332,9 @@ limit
   5
 ```
 * Output snippet <br />
-![Top5_average_freight_value](pic\t5_af_val.png)
+![Top5_average_freight_value](pic/t5_af_val.png)
 
-* Bottom 5 states with highest average freight value <br />
+* 13b. Bottom 5 states with highest average freight value <br />
 * Query
 ``` sql
 select
@@ -350,10 +352,10 @@ order by
 limit   5
 ```
 * Output Snippet <br />
-![Least_avg_frieght_val](pic\b5_af_val.png)
+![Least_avg_frieght_val](pic/b5_af_val.png)
 
-#### Top 5 states with highest/lowest average time to delivery <br />
-* Top 5 states with highest average time delivery <br />
+#### 14. Top 5 states with highest/lowest average time to delivery <br />
+* 14a. Top 5 states with highest average time delivery <br />
 * Query 
 ``` sql 
 select
@@ -372,9 +374,9 @@ limit
   5
 ```
 * Output snippet <br />
-![average_delivery_time](pic\t5_ad_val.png) <br />
+![average_delivery_time](pic/t5_ad_val.png) <br />
 
-* Bottom 5 states with highest average time delivery <br />
+* 14b. Bottom 5 states with highest average time delivery <br />
 * Query 
 ``` sql
 select
@@ -393,10 +395,10 @@ limit
   5
 ```
 * Output snippet<br />
-![botoom5_average_delivery_time](pic\b5_ad_val.png) <br />
+![botoom5_average_delivery_time](pic/b5_ad_val.png) <br />
 
-#### Top 5 states where delivery is really fast/ not so fast compared to estimated date <br />
-* Top 5 states where the delivery is fast compared to estimated date <br />
+#### 15.Top 5 states where delivery is really fast/ not so fast compared to estimated date <br />
+* 15a. Top 5 states where the delivery is fast compared to estimated date <br />
 * Query 
 ``` sql
 select
@@ -415,9 +417,9 @@ limit
 	5
 ```
 * Output Snippet <br />
-![fastest_delivery](pic\t5_fd_val.png) <br />
+![fastest_delivery](pic/t5_fd_val.png) <br />
 
-* Top 5 states where the delivery is not fast compared to estimated date <br />
+* 15b. Top 5 states where the delivery is not fast compared to estimated date <br />
 * Query
 ``` sql
 select
@@ -436,9 +438,9 @@ limit
   5
 ```
 * Output snippet <br />
-![least_fast_del](pic\b5_fd_val.png)<br />
+![least_fast_del](pic/b5_fd_val.png)<br />
 
-Month on Month count of orders for different payment types <br />
+#### 16.Month on Month count of orders for different payment types <br />
 * Query
 ```sql
 select 
@@ -455,9 +457,9 @@ order by
   2,1,3
 ```
 * Output snippet <br />
-![payment_count](pic\payment_count.png) <br />
+![payment_count](pic/payment_count.png) <br />
 
-Distribution of payment instalments and count of orders <br />
+#### 17.Distribution of payment instalments and count of orders <br />
 * Query
 ``` sql
 with payment_distribution as (
@@ -483,7 +485,7 @@ group by
   1
 ```
 * Output Snippet <br />
-![EMI_count](pic\emi_cnt.png)
+![EMI_count](pic/emi_cnt.png)
 
 ### Actionable Insight 
 
