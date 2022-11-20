@@ -18,7 +18,7 @@ This is a `Relational Database` which means that the data that are stored in a r
  * Products 
  * Sellers 
 
-The data of the each table were in CSV(`Comma seperated values`). So it was imported to the Sql envirnment and the analysis is done. Since size of the data is very large Google Sandbox Big Query is used since the processing speed is faster
+The data of the each table were in CSV(`Comma seperated values`). So it was imported to the Sql envirnment and the analysis is done. Since size of the data is very large Google Sandbox Big Query is used since the processing speed is faster. This ananlysis has  analysing of data and providing `Actionable insight` with some `Recomandation`
 
 ## Concepts used
 
@@ -43,315 +43,460 @@ where
 order by 
     ordinal_position
 ```
-![Customer_table](Customers_Table.png) ![Geolocation_table](Geolocation_table.png) ![Order_Item_table](Orders_Item_table.png)
-![Ordre_table](orders_table.png) ![Payment_table](payments_table.png) ![Database structure](Screenshot.png) 
-![Produts_table](products_table.png) ![Sellers_table](sellers_table.png)
+* Customer Table
+![Customer_table](Customers_Table.png)
+* Geolocation Table
+ ![Geolocation_table](Geolocation_table.png) 
+* Order Item Table
+ ![Order_Item_table](Orders_Item_table.png)
+* Order Table
+![Order_table](orders_table.png) 
+* Payment Table
+![Payment_table](payments_table.png) 
+* Order Review Table 
+![Order_review_Table](Orders_Review_table.png) 
+* Products Table
+![Produts_table](products_table.png)
+* Sellers Table 
+ ![Sellers_table](sellers_table.png)
 
 
-
-
-
-In the database, identify the month wise highest paying passenger name and passenger id
+Time period of the data given
+* Query 
 ``` sql
-select 
-	a.month_name as Month_name,
-	a.passenger_id as Passenger_id,
-	a.Passenger_name as Passenger_name,
-	a.amount as amount
-from
-	(select
-		to_char(book.book_date,'Mon-yy') as month_name,
-		tic.passenger_id as passenger_id,
-		tic.passenger_name as passenger_name,
-		sum(book.total_amount) as amount,
-		rank() over(partition by to_char(book.book_date,'Mon-yy') order by sum(book.total_amount) desc) as rnk
-	from 
-		bookings.bookings book join bookings.tickets tic
-		on book.book_ref = tic.book_ref
-		group by month_name,passenger_id,passenger_name)a
-where rnk = 1
+        SELECT 
+            cast(min(order_purchase_timestamp) as date) as start_date,
+            cast(max(order_purchase_timestamp) as date) as end_date
+
+        FROM
+            `E_commerce.orders`
 ```
-In the database, identify the month wise least paying passenger name and passenger id?
+* Output snippet
+    ![Time_period](time_range_output.png)
+The given table contains the data from 4th September 2016 to 17th October 2018 with almost close to 2 years of data
+
+Cities and states covered in the data 
+* Cities 
 ```sql 
-select 
-	a.month_name as Month_name,
-	a.passenger_id as Passenger_id,
-	a.Passenger_name as Passenger_name,
-	a.amount as amount
-from
-	(select
-		to_char(book.book_date,'Mon-yy') as month_name,
-		tic.passenger_id as passenger_id,
-		tic.passenger_name as passenger_name,
-		sum(book.total_amount) as amount,
-		rank() over(partition by to_char(book.book_date,'Mon-yy') order by sum(book.total_amount)) as rnk
-	from 
-		bookings.bookings book join bookings.tickets tic
-		on book.book_ref = tic.book_ref
-		group by month_name,passenger_id,passenger_name)a
-where rnk = 1
+SELECT 
+      distinct geolocation_city as city
+FROM
+      `E_commerce.geolocation`
 ```
-Identify the travel details of non no stop journeys  or return journeys (having more than 1 flight.
-``` sql
-select 
-	tic.passenger_id as passenger_id,
-	tic.passenger_name as passenger_name,
-	tic.ticket_no as ticket_no,
-	count(tf.flight_id) as flight_count
-from
-	bookings.tickets tic join bookings.ticket_flights tf
-	on tic.ticket_no = tf.ticket_no
-group by
-	 tic.passenger_name,tic.passenger_id, tic.ticket_no
-having 
-	count(tic.ticket_no) > 1
-order by
-	 count(tf.flight_id) desc
+* Output snippet
+![city](city_output.png)
+The dataset contains a total of `8011` cities 
+
+* States 
+```sql 
+SELECT 
+      distinct geolocation_state as state 
+FROM
+      `E_commerce.geolocation`
 ```
-How many tickets are there without boarding passes?
-``` sql 
-select
-((select count(ticket_no) from bookings.ticket_flights) - 
- (select count(ticket_no) from bookings.boarding_passes)) as not_having_boarding_passes
-```
-Details of the longest flight
-``` sql 
-select 
-	*,
-	(actual_arrival - actual_departure) as duration
-from 
-	bookings.flights
-where 
-	(actual_arrival - actual_departure) = (select 
-					     		max((actual_arrival - actual_departure))
-					       from 
-							bookings.flights)
-```
-Categorizing the flights by the time of their departure
-a.Early morning flights: 2 AM to 6AM
-	b.Morning flights: 6 AM to 11 AM
-	c.Noon flights: 11 AM to 4 PM
-	d.Evening flights: 4 PM to 7 PM
-	e.Night flights: 7 PM to 11 PM 
-	f.Late Night flights: 11 PM to 2 
-``` sql 
-select 
-	flight_id,
-	flight_no,
-	scheduled_departure,
-	scheduled_arrival,
-case
-	when cast(to_char(scheduled_departure, 'HH24:MI') as TIME) between '19:00:00' and '23:00:00' then 'Night_Flight'
-	when cast(to_char(scheduled_departure, 'HH24:MI') as TIME) between '2:00:00' and '6:00:00' then 'Early_Morning_Flight'
-	when cast(to_char(scheduled_departure, 'HH24:MI') as TIME) between '6:00:00' and '11:00:00' then 'Morning_Flight'
-	when cast(to_char(scheduled_departure, 'HH24:MI') as TIME) between '11:00:00' and '16:00:00' then 'Noon_Flight'
-	when cast(to_char(scheduled_departure, 'HH24:MI') as TIME) between '16:00:00' and '19:00:00' then 'Evening_Flight'
-	else 'Late_Night_Flight'
- end as timings
-from 
-	bookings.flights
-```
-Details of all the morning flights
-``` sql
-select
-	 a.*
-from
-	(select *,
-	case 
-		when cast(to_char(scheduled_departure, 'HH24:MI') as TIME) between '6:00:00' and '11:00:00' then 'Morning_Flight'
- 	else 
-		'other'
-	end as timings
-from 
-	bookings.flights)a
-where 
-	a.timings = 'Morning_Flight'
-```
-The earliest morning flight available from every airport
-``` sql
-select 
-	b.flight_id,
-	b.flight_no,
-	b.scheduled_departure,
-	b.scheduled_arrival,
-	b.departure_airport,
-	b.timings
-from
-	(select 
-		a.*,
-		rank() over(partition by departure_airport order by scheduled_departure asc) as rnk
-	from(
-		select flight_id,
-		flight_no,
-		scheduled_departure,
-		scheduled_arrival,
-		departure_airport,
-	case 
-		when cast(to_char(scheduled_departure, 'HH24:MI') as TIME) between '6:00:00' and '11:00:00' then 'Morning_Flight'
-	else 
-		'other'
-	end as timings
-	from 
-		bookings.flights)a
-where 
-	a.timings = 'Morning_Flight')b
-where
-	 b.rnk = 1
-```
-Count of seats in various fare condition for every aircraft code
-``` sql
-select 	
-	aircraft_code,
-	fare_conditions,
-	count(seat_no) as seats
-from 
-	bookings.seats
-group 
-	by aircraft_code, fare_conditions
-order 
-	by aircraft_code ;
-```
-Aircrafts codes that have at least one Business class seats
+* Output snippet 
+![State](state_output.png)
+
+
+Exploring the growing trend on e-commerce in the given data and finding if there are seasonality with peaks at specific months.
+* Query
 ``` sql
 with cte as 
-(select 
-	aircraft_code
-from 	
-	bookings.seats
-group by
-	aircraft_code, fare_conditions
-having 
-	count(seat_no) >= 1 and fare_conditions = 'Business')
-	
-select 
-	count(*) as count_of_aircraft_code_with_business_class
-from 
-	cte ;
-```
-Name of the airport having maximum number of departure flight
-``` sql
-select 
-	a.departure_airport
-from
-	(select
-		departure_airport,
-		count(actual_departure) as num_of_flights,
-		rank() over(order by count(actual_departure) desc) as count_rank
-	from 
-		bookings.flights
-	group by
-		departure_airport)a
-where 
-	a.count_rank = 1 ;
-```
-Name of the airport having least number of scheduled departure flights
-``` sql
-with cte as
-	(select
-		departure_airport,
-		count(actual_departure) as num_of_flights,
-		rank() over(order by count(actual_departure)) as count_rank
-	from 
-		bookings.flights
-	group by
-		departure_airport)
+(SELECT 
+      extract(month from order_purchase_timestamp) as month,
+       extract(year from order_purchase_timestamp) as year,
+      count(order_id) as total_orders
+FROM
+      `E_commerce.orders`
+group by 
+    1,2
+order by 
+    2,1)
 
 select 
-	departure_airport
+  concat(month,"-",year) as time_period,
+  total_orders
 from 
-	cte
-where 
-	count_rank = 1 ;
+  cte 
 ```
-Airport(name) has most cancelled flights (arriving)
+* Output snippet
+![growing_tend](seasonality_output.png)
+![growing_tend](seasonality_graph.png)
+From the data we could see that there is a spike in the orders from the year 2017 and a rapid collapse of orders towards the end of the 2018. 
+It is evident that there is increase in orders in first quarter of each year. 
+
+Part of day at which the customers tend to buy products 
+* Query
+``` sql 
+with cte as 
+        ((select
+            *,
+            (case
+                  when (extract(time FROM order_purchase_timestamp)) between "04:00:00" and "06:00:00" then "Dawn"
+                  when (extract(time FROM order_purchase_timestamp)) between "06:00:01" and "12:00:00" then "Morning"
+                  when (extract(time FROM order_purchase_timestamp)) between "12:00:01" and "17:00:00" then "Afternoon"
+                  when (extract(time FROM order_purchase_timestamp)) between "17:00:01" and "20:00:00" then "Evening"
+                  else "Night"
+                  end) as time_part 
+        from 
+            `E_commerce.orders`))
+
+select 
+  time_part,
+  count(order_id) as total_count 
+from 
+  cte
+group by 
+  1
+order by 
+  2 desc
+```
+* Output snippet
+![part_of_day](part_of_day_output.png)
+From the result it is evident that people in Brazil tends to buy the products during Afternoon 
+
+Month on month orders by region, states
+* Query
+``` sql 
+select  
+  extract(month from o.order_purchase_timestamp) as month,
+  extract(year from o.order_purchase_timestamp) as year,
+  c.customer_city as city,
+  c.customer_state as state,
+  count(o.order_id) as orders_count
+from 
+  `E_commerce.orders` o  join `E_commerce.customers` c
+  on o.customer_id = c.customer_id
+group by 
+  1,2,3,4
+order by 
+  2,1
+```
+* Output snippet
+![MOM_region,state](mom_r%2Cs.png)
+
+
+Distribution of Customers State wise 
+* Query
+``` sql 
+select 
+  customer_state as city,
+  count(customer_id) as customers_count
+from 
+  `E_commerce.customers`
+group by 
+  1
+order by 
+  2 desc
+```
+* Output snippet
+![state_wise_customers](state_wise_cus.png)
+
+Distribution of Customers City wise
+* Query
+``` sql
+select 
+  customer_city as city,
+  count(customer_id) as customers_count
+from 
+  `E_commerce.customers`
+group by 
+  1
+order by 
+  2 desc
+```
+* Output Snippet 
+![city_wise_customers](city_wise_cus.png)
+
+Percentage increase in cost of orders from 2017 to 2018 
+NOTE : Since the tables have comman months from January to August, analysis is only made on these month of two years
+* Query
+``` sql
+with data_2017 as (
+
+  select 
+    round(sum(oi.price + oi.freight_value),2) as cost
+  from
+    `E_commerce.order_items` oi join `E_commerce.orders` o 
+    on oi.order_id = o.order_id 
+  where 
+    (extract(month from o.order_purchase_timestamp) in (1,2,3,4,5,6,7,8)) and 
+    (extract(year from o.order_purchase_timestamp)  =  2017)
+),
+data_2018 as (
+
+  select 
+    round(sum(oi.price + oi.freight_value),2) as cost
+  from
+    `E_commerce.order_items` oi join `E_commerce.orders` o 
+    on oi.order_id = o.order_id 
+  where 
+    (extract(month from o.order_purchase_timestamp) in (1,2,3,4,5,6,7,8)) and 
+    (extract(year from o.order_purchase_timestamp)  =  2018)
+)
+
+select 
+  round(((d18.cost - d17.cost) / d17.cost) * 100,2) as percentage_increase_in_cost
+from 
+  data_2018 d18, data_2017 d17
+```
+* Output sinppet 
+![Percentage_Increase_in_cost](percentage_inc.png)
+From the output it is seen that there is increase of 138% of increse in cost 
+
+Analysis of sum of price and freight value and also average price and freight value
+* Query
+``` sql
+select 
+  c.customer_state as state,
+  round(sum(oi.freight_value),2) as sum_of_freight_value,
+  round((sum(oi.freight_value)/count(o.order_id)),2) as mean_freight_value,
+  round(sum(oi.price),2) as sum_of_price_value,
+  round((sum(oi.price)/count(o.order_id)),2) as mean_price_value
+from 
+  `E_commerce.customers` c join `E_commerce.orders` o 
+  on c.customer_id = o.customer_id
+  join `E_commerce.order_items` oi 
+  on o.order_id = oi.order_id 
+group by 
+  1
+order by  
+  1
+```
+* Output snippet 
+![sum_and_avg_statewise](sum_and_avg.png)
+
+Analysis of delivery metric 
+* Time to delivery 
+* Difference in estimate time to delivery 
+
+* Query
 ``` sql
 select
-	a.airport_name
-from
-	(select 
-		(ad.airport_name ->> 'en') as airport_name,
-		count(ad.airport_name),
-		rank() over (order by count(ad.airport_name) desc) as rnk
-	from 
-		bookings.airports_data ad join bookings.flights f
-		on f.arrival_airport = ad.airport_code
-	group by 
-		ad.airport_name,f.status
-	having 
-		f.status = 'Cancelled')a
-where 
-	a.rnk = 1 ;
+  order_id,
+  order_purchase_timestamp,
+  order_delivered_customer_date,
+  order_estimated_delivery_date,
+  date_diff(date (extract(date from order_delivered_customer_date)),date (extract(date from order_purchase_timestamp)),day) as time_to_delivery,
+  date_diff(date (extract(date from order_estimated_delivery_date)),date (extract(date from order_delivered_customer_date)),day) as diff_estimated_delivery
+from 
+  `E_commerce.orders`
 ```
-Flight ids which are using “Airbus aircrafts”
+* Output snippet
+![Delivery_est_time](delivery_est.png)
+In some of the diff_estimated_delivery we could see that there is a negative symbol which stated that the delivery was given before the estimated delivery date 
+
+Average freight_value, time_to_delivery, diff_estimated_delivery state wise
+* Query
+``` sql
+select
+  c.customer_state as  state,
+  round(sum(oi.freight_value) / count(o.order_id),2) as Mean_freight_value,
+  round(avg(date_diff(date (extract(date from o.order_delivered_customer_date)),date (extract(date from o.order_purchase_timestamp)),day)),2) as Mean_time_to_delivery,
+  round(avg(date_diff(date (extract(date from o.order_estimated_delivery_date)),date (extract(date from o.order_delivered_customer_date)),day)),2) as Mean_diff_estimated_delivery
+from 
+  `E_commerce.customers` c join `E_commerce.orders` o 
+   on c.customer_id = o.customer_id
+  join `E_commerce.order_items`oi 
+  on o.order_id = oi.order_id
+group by 
+  1
+order by 
+  1
+```
+* Output Snippet 
+![average_values_statewise](avg_state_del.png)
+
+### TOP 5 and BOTTOM 5 Analysis 
+
+#### Top 5 states with highest/lowest average freight value 
+
+* Top 5 states with highest average freight value
+* Query 
+``` sql
+select
+  c.customer_state as  state,
+  round(sum(oi.freight_value) / count(o.order_id),2) as Mean_freight_value
+from 
+  `E_commerce.customers` c join `E_commerce.orders` o 
+   on c.customer_id = o.customer_id
+  join `E_commerce.order_items`oi 
+  on o.order_id = oi.order_id
+group by 
+  1
+order by 
+  2 desc
+limit 
+  5
+```
+* Output snippet 
+![Top5_average_freight_value](t5_af_val.png)
+
+* Bottom 5 states with highest average freight value
+* Query
+``` sql
+select
+  c.customer_state as  state,
+  round(sum(oi.freight_value) / count(o.order_id),2) as Mean_freight_value
+from 
+  `E_commerce.customers` c join `E_commerce.orders` o 
+   on c.customer_id = o.customer_id
+  join `E_commerce.order_items`oi 
+  on o.order_id = oi.order_id
+group by 
+  1
+order by 
+  2 asc
+limit   5
+```
+* Output Snippet 
+![Least_avg_frieght_val](b5_af_val.png)
+
+#### Top 5 states with highest/lowest average time to delivery 
+* Top 5 states with highest average time delivery 
+* Query 
 ``` sql 
 select
-	a.flight_id
+  c.customer_state as  state,
+    round(avg(date_diff(date (extract(date from o.order_delivered_customer_date)),date (extract(date from o.order_purchase_timestamp)),day)),2) as Mean_time_to_delivery
 from 
-	(select 
-		f.flight_id,
-		split_part((model ->> 'en'),' ',1) as model
-	from 
-		bookings.flights f join bookings.aircrafts_data ad
-		on f.aircraft_code = ad.aircraft_code)a
-where 
-	a.model = 'Airbus' ;
-```
-Date-wise last flight id flying from every airport
-``` sql
-select 
-	a.departure_airport,
-	a.date as date,
-	a.flight_id as flight_id
-from
-	(select
-	 	departure_airport,
-		flight_id,
-		scheduled_departure as date,
-		rank() over (partition by departure_airport,cast(scheduled_departure as date)  order by scheduled_departure desc) as rnk
-	from 
-		bookings.flights)a
-where 
-	a.rnk = 1
+  `E_commerce.customers` c join `E_commerce.orders` o 
+   on c.customer_id = o.customer_id
+  join `E_commerce.order_items`oi 
+  on o.order_id = oi.order_id
+group by 
+  1
 order by 
-	a.date ;
+  2 desc
+limit 
+  5
 ```
-Date wise first cancelled flight id flying for every airport
+* Output snippet 
+![average_delivery_time](t5_ad_val.png)
+
+* Bottom 5 states with highest average time delivery 
+* Query 
 ``` sql
 select
-	a.departure_airport as departure_airport,
-	a.dte as date, 
-	a.flight_id as flight_id
-from
-	(select
-	 	departure_airport,
-		flight_id,
-		scheduled_departure as dte,
-		rank() over (partition by departure_airport,cast(scheduled_departure as date)  order by scheduled_departure) as rnk
-	from 
-		bookings.flights
-	where 
-		status = 'Cancelled')a
-where 
-	a.rnk = 1
-order by 
-	a.dte ;
-```
-Flight ids having highest range
-``` sql
-with code as ((select 
-			aircraft_code 
-		from 
-			bookings.aircrafts_data
-		where 
-			range = (select 
-					max(range) 
-	       			 from 
-					bookings.aircrafts_data)))
-
-select 
-	distinct flight_id 
+  c.customer_state as  state,
+    round(avg(date_diff(date (extract(date from o.order_delivered_customer_date)),date (extract(date from o.order_purchase_timestamp)),day)),2) as Mean_time_to_delivery
 from 
-	bookings.flights
-where 
-	aircraft_code = (select * from code)
+  `E_commerce.customers` c join `E_commerce.orders` o 
+   on c.customer_id = o.customer_id
+  join `E_commerce.order_items`oi 
+  on o.order_id = oi.order_id
+group by 
+  1
+order by 
+  2 asc
+limit 
+  5
 ```
+![botoom5_average_delivery_time](b5_ad_val.png)
+
+#### Top 5 states where delivery is really fast/ not so fast compared to estimated date
+* Top 5 states where the delivery is fast compared to estimated date 
+* Query 
+``` sql
+select
+  c.customer_state as  state,
+  round(avg(date_diff(date (extract(date from o.order_estimated_delivery_date)),date (extract(date from o.order_delivered_customer_date)),day)),2) as Mean_diff_estimated_delivery
+from 
+  `E_commerce.customers` c join `E_commerce.orders` o 
+   on c.customer_id = o.customer_id
+  join `E_commerce.order_items`oi 
+  on o.order_id = oi.order_id
+group by 
+  1
+order by 
+  2 asc 
+limit 
+	5
+```
+* Output Snippet
+1[fastest_delivery](t5_fd_val.png)
+
+* Top 5 states where the delivery is not fast compared to estimated date 
+* Query
+``` sql
+select
+  c.customer_state as  state,
+  round(avg(date_diff(date (extract(date from o.order_estimated_delivery_date)),date (extract(date from o.order_delivered_customer_date)),day)),2) as Mean_diff_estimated_delivery
+from 
+  `E_commerce.customers` c join `E_commerce.orders` o 
+   on c.customer_id = o.customer_id
+  join `E_commerce.order_items`oi 
+  on o.order_id = oi.order_id
+group by 
+  1
+order by 
+  2 desc  
+limit 
+  5
+```
+* Output snippet 
+![least_fast_del](b5_fd_val.png)
+
+Month on Month count of orders for different payment types
+* Query
+```sql
+select 
+  extract(month from o.order_purchase_timestamp) as month,
+  extract(year from o.order_purchase_timestamp) as year,
+  p.payment_type as payment_mode,
+  count(p.order_id) as count_of_orders
+from 
+  `E_commerce.payments` p  join `E_commerce.orders`o 
+  on o.order_id = p.order_id
+group by 
+  3,1,2
+order by 
+  2,1,3
+```
+* Output snippet 
+![payment_count](payment_count.png)
+
+Distribution of payment instalments and count of orders
+* Query
+``` sql
+with payment_distribution as (
+  select 
+    order_id,
+    (case 
+         when payment_installments = 0 then "0(not_opted_for_emi)"
+         when payment_installments between 1 and 6 then "1-6"
+         when payment_installments between 7 and 12 then "7-12"
+         when payment_installments between 13 and 18 then "13-18"
+         when payment_installments between 19 and 24 then"19-24" 
+    end ) as installment_month
+  from 
+    `E_commerce.payments`
+)
+
+select
+ installment_month ,
+ count(order_id) as count_of_orders
+from 
+  payment_distribution
+group by 
+  1
+```
+* Output Snippet 
+![EMI_count](emi_cnt.png)
+
+### Actionable Insight 
+
+1. We could see that there is a dip in orders in the Q2 and Q3 in orders as per the      data given 
+2. It is observed that the customers tend to buy more products during the Afternoon time period and least during dawn 
+3. We can see that customers’ orders are high in the highly populated and famous cities 
+4. Increase in cost is highly corelated with increase in orders 
+5. There is difference in average freight values between each state, 42.98 being    highest and 15.15 being lowest 
+6. There is difference in delivery time with in each state of the data provided 
+7. 99% of the customers tend to choose for Emi during purchase of the product
+
+### Recomendation 
+1. It is recommended to improve the sales during low performing quarters of the year by provided offers and sales 
+2. It is recommended to improve the delivery time period in states where the delivery time it least 
+3. Marketing and promotions to be made in the cities and states where the customer count is least 
+4. Avg difference of estimated vs delivered date ranges from 8-20 days. The variance can be improved
+5. Almost 2/3rd of the customers is coming from 3 states. Target can focus on other states to attract
